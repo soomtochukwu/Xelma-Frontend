@@ -36,6 +36,17 @@ Three **connected nodes** forming an upward triangle — a decentralized network
 
 ---
 
+## Wordmark Lockups
+
+Each concept includes a **horizontal lockup** (icon + "Xelma" wordmark in DM Sans 700) in two text-color variants:
+
+| Variant      | Text Color        | Use On                                  |
+| ------------ | ----------------- | --------------------------------------- |
+| **Standard** | `#292D32` (dark)  | Light backgrounds (`#FAFAFA`, white)    |
+| **Dark**     | `#F3F4F6` (light) | Dark backgrounds (`#111827`, `#1F2937`) |
+
+---
+
 ## Color System
 
 ### Primary Palette
@@ -129,33 +140,39 @@ Maintain clear space around the logo equal to **25% of the logo height** on all 
 
 ### Concept A — Abstract Token
 
-| File                                      | Size              |
-| ----------------------------------------- | ----------------- |
-| `concept-a/xelma-logo-concept-a.svg`      | Vector (scalable) |
-| `concept-a/xelma-logo-concept-a-512.png`  | 512 × 512 px      |
-| `concept-a/xelma-logo-concept-a-256.png`  | 256 × 256 px      |
-| `concept-a/xelma-logo-concept-a-64.png`   | 64 × 64 px        |
-| `concept-a/xelma-logo-concept-a-mono.svg` | Monochrome vector |
+| File                                          | Size                |
+| --------------------------------------------- | ------------------- |
+| `concept-a/xelma-logo-concept-a.svg`          | Vector (scalable)   |
+| `concept-a/xelma-logo-concept-a-512.png`      | 512 × 512 px        |
+| `concept-a/xelma-logo-concept-a-256.png`      | 256 × 256 px        |
+| `concept-a/xelma-logo-concept-a-64.png`       | 64 × 64 px          |
+| `concept-a/xelma-logo-concept-a-mono.svg`     | Monochrome vector   |
+| `concept-a/xelma-wordmark-concept-a.svg`      | Wordmark (light bg) |
+| `concept-a/xelma-wordmark-concept-a-dark.svg` | Wordmark (dark bg)  |
 
 ### Concept B — Upward Momentum
 
-| File                                      | Size              |
-| ----------------------------------------- | ----------------- |
-| `concept-b/xelma-logo-concept-b.svg`      | Vector (scalable) |
-| `concept-b/xelma-logo-concept-b-512.png`  | 512 × 512 px      |
-| `concept-b/xelma-logo-concept-b-256.png`  | 256 × 256 px      |
-| `concept-b/xelma-logo-concept-b-64.png`   | 64 × 64 px        |
-| `concept-b/xelma-logo-concept-b-mono.svg` | Monochrome vector |
+| File                                          | Size                |
+| --------------------------------------------- | ------------------- |
+| `concept-b/xelma-logo-concept-b.svg`          | Vector (scalable)   |
+| `concept-b/xelma-logo-concept-b-512.png`      | 512 × 512 px        |
+| `concept-b/xelma-logo-concept-b-256.png`      | 256 × 256 px        |
+| `concept-b/xelma-logo-concept-b-64.png`       | 64 × 64 px          |
+| `concept-b/xelma-logo-concept-b-mono.svg`     | Monochrome vector   |
+| `concept-b/xelma-wordmark-concept-b.svg`      | Wordmark (light bg) |
+| `concept-b/xelma-wordmark-concept-b-dark.svg` | Wordmark (dark bg)  |
 
 ### Concept C — Community Cluster
 
-| File                                      | Size              |
-| ----------------------------------------- | ----------------- |
-| `concept-c/xelma-logo-concept-c.svg`      | Vector (scalable) |
-| `concept-c/xelma-logo-concept-c-512.png`  | 512 × 512 px      |
-| `concept-c/xelma-logo-concept-c-256.png`  | 256 × 256 px      |
-| `concept-c/xelma-logo-concept-c-64.png`   | 64 × 64 px        |
-| `concept-c/xelma-logo-concept-c-mono.svg` | Monochrome vector |
+| File                                          | Size                |
+| --------------------------------------------- | ------------------- |
+| `concept-c/xelma-logo-concept-c.svg`          | Vector (scalable)   |
+| `concept-c/xelma-logo-concept-c-512.png`      | 512 × 512 px        |
+| `concept-c/xelma-logo-concept-c-256.png`      | 256 × 256 px        |
+| `concept-c/xelma-logo-concept-c-64.png`       | 64 × 64 px          |
+| `concept-c/xelma-logo-concept-c-mono.svg`     | Monochrome vector   |
+| `concept-c/xelma-wordmark-concept-c.svg`      | Wordmark (light bg) |
+| `concept-c/xelma-wordmark-concept-c-dark.svg` | Wordmark (dark bg)  |
 
 ### Shared Assets
 
