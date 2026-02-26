@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { socketService } from "../lib/socket";
 
 interface Message {
   id: string;
@@ -8,39 +9,23 @@ interface Message {
   timestamp: Date;
 }
 
-// Mock messages for MVP
-const mockMessages: Message[] = [
-  {
-    id: "1",
-    username: "CryptoKing",
-    content: "Just made a great prediction on XLM! 🚀",
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-  },
-  {
-    id: "2",
-    username: "MarketWatcher",
-    content: "The market is looking bullish today!",
-    timestamp: new Date(Date.now() - 1000 * 60 * 3),
-  },
-  {
-    id: "3",
-    username: "TradePro",
-    content: "Anyone else seeing this pattern on Bitcoin?",
-    timestamp: new Date(Date.now() - 1000 * 60 * 2),
-  },
-  {
-    id: "4",
-    username: "NewTrader",
-    content: "Just joined, excited to learn from everyone!",
-    timestamp: new Date(Date.now() - 1000 * 60 * 1),
-  },
-  {
-    id: "5",
-    username: "Joedev",
-    content: "Welcome to the community! 🎉",
-    timestamp: new Date(Date.now() - 1000 * 30),
-  },
-];
+interface ApiMessage {
+  id: string;
+  username: string;
+  avatar?: string;
+  content: string;
+  createdAt: string;
+}
+
+function mapApiMessage(msg: ApiMessage): Message {
+  return {
+    id: msg.id,
+    username: msg.username,
+    avatar: msg.avatar,
+    content: msg.content,
+    timestamp: new Date(msg.createdAt),
+  };
+}
 
 function formatTimestamp(date: Date): string {
   const now = new Date();
@@ -122,7 +107,7 @@ interface ChatSidebarProps {
 }
 
 export function ChatSidebar({ showNewsRibbon = true }: ChatSidebarProps) {
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [onlineCount] = useState(16);
@@ -136,17 +121,49 @@ export function ChatSidebar({ showNewsRibbon = true }: ChatSidebarProps) {
     scrollToBottom();
   }, [messages]);
 
+  // Load chat history from REST on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`/api/chat/history`)
+      .then((res) => res.json())
+      .then((data: ApiMessage[]) => {
+        if (!cancelled) {
+          setMessages(data.map(mapApiMessage));
+        }
+      })
+      .catch((err: unknown) =>
+        console.error("[ChatSidebar] Failed to load history:", err),
+      );
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Listen for incoming chat:message events via socket
+  useEffect(() => {
+    const unsubscribe = socketService.onChatMessage((data: ApiMessage) => {
+      setMessages((prev) => {
+        // De-duplicate: server echoes our own sends back through chat:message
+        if (prev.some((m) => m.id === data.id)) return prev;
+        return [...prev, mapApiMessage(data)];
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
 
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      username: "You",
-      content: inputValue.trim(),
-      timestamp: new Date(),
-    };
+    // Emit chat:send to the server instead of pushing to local state.
+    // The server will broadcast chat:message back to all clients in the
+    // channel (including the sender), which the listener above will handle.
+    socketService.sendChat({ content: inputValue.trim() });
 
-    setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
   };
 
@@ -171,7 +188,7 @@ export function ChatSidebar({ showNewsRibbon = true }: ChatSidebarProps) {
 
       {/* Mobile Toggle Button */}
       <button
-        className="md:hidden fixed left-4 bottom-4 w-14 h-14 bg-[#2C4BFD] border-none rounded-full flex items-center justify-center cursor-pointer z-60 shadow-lg shadow-[#2C4BFD]/30 transition-transform duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#2C4BFD]/40"
+        className="md:hidden fixed right-4 bottom-24 w-14 h-14 bg-[#2C4BFD] border-none rounded-full flex items-center justify-center cursor-pointer z-70 shadow-lg shadow-[#2C4BFD]/30 transition-transform duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#2C4BFD]/40"
         onClick={toggleMobile}
         aria-label="Toggle chat sidebar"
       >
@@ -203,12 +220,18 @@ export function ChatSidebar({ showNewsRibbon = true }: ChatSidebarProps) {
         </svg>
       </button>
 
-      {/* Sidebar */}
+      {/* Sidebar / Bottom Sheet */}
       <aside
-        className={`chat-sidebar fixed left-0 w-80 flex flex-col z-40 transition-all duration-300 ease-in-out border-r
+        className={`chat-sidebar fixed flex flex-col z-60 transition-all duration-300 ease-in-out border-r
         bg-white dark:bg-[#1f2937] border-gray-100 dark:border-gray-800
-        ${showNewsRibbon ? "top-[128px] lg:top-[176px] h-[calc(100vh-128px)] lg:h-[calc(100vh-176px)]" : "top-[80px] lg:top-[112px] h-[calc(100vh-80px)] lg:h-[calc(100vh-112px)]"}
-        md:translate-x-0 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        
+        /* Desktop: Side Drawer */
+        md:left-0 md:w-80 md:translate-x-0
+        ${showNewsRibbon ? "md:top-[128px] lg:md:top-[176px] md:h-[calc(100vh-128px)] lg:md:h-[calc(100vh-176px)]" : "md:top-[80px] lg:md:top-[112px] md:h-[calc(100vh-80px)] lg:md:h-[calc(100vh-112px)]"}
+        
+        /* Mobile: Bottom Sheet */
+        left-0 bottom-0 w-full h-[60vh] rounded-t-2xl shadow-2xl md:rounded-none md:shadow-none
+        ${isMobileOpen ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-0"}`}
       >
         {/* Header */}
         <header className="flex items-center justify-between p-4 m-2.5 rounded-lg bg-white dark:bg-[#1f2937] dark:text-white">
